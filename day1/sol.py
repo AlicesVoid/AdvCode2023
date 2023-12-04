@@ -10,71 +10,137 @@ numWords = {"one": 1,
             "nine": 9,
             "zero": 0}
 
-def numWordToNum(line):
+def firstLastNumWord(line):
     
     # Establish Variables
     firstNum = ""
     lastNum = ""
     
-    # Find the numWord closest to the front of the string 
-    for numWord in numWords:
-        if numWord in line:
-            firstNum = numWord
-            break
-        
-    # Find the numWord closest to the end of the string 
-    for numWord in numWords:
-        if numWord in line:
-            lastNum = numWord
-            break
-    
-        
-    # Return Line
-    return line
+    # Find a NumWord in the line 
+    for word in numWords:
+        if word in line:
+                                     
+            # If first and last are blank, set them both to word 
+            if firstNum == "" and lastNum == "":
 
-def part1():
-    # Assert Total
-    total = 0
+                firstNum = word
+                lastNum = word
+                        
+            # Find how close the word is to the beginning of the line
+            if line.find(word) < line.find(firstNum):
 
-    # Read Each Line of Input.txt
-    with open('input.txt') as f:
-        content = f.readlines()
-        
-        # Loop through each line
-        for line in content:
+                firstNum = word
             
-            # Find First Number in Line
+            # Find how close the word is to the end of the line 
+            if line.rfind(word) > line.rfind(lastNum):
+                lastNum = word         
+                
+            # print(word ,line.find(word), line.find(firstNum), line.rfind(lastNum))           
+
+    
+    # if firstNum != "" and lastNum != "":
+        
+    #     # Create #num# from num 
+    #     fullFirst = str(numWords[firstNum]) + firstNum + str(numWords[firstNum])
+    #     fullLast = str(numWords[lastNum]) + lastNum + str(numWords[lastNum])
+        
+    #     # Replace firstNum and lastNum with fullFirst and fullLast
+    #     frontline = line.replace(firstNum, str(numWords[firstNum]))
+    #     backline = line.replace(lastNum, str(numWords[lastNum]))   
+        
+    #     line = frontline + backline   
+               
+    # Return Line
+    return [firstNum, lastNum]
+
+def wordNumSum(line):
+
+            # Find First and Last WordNum in line
+            words = firstLastNumWord(line)
+            
+            # Check if there is a number in line
+            if any(char.isdigit() for char in line):
+                # Find First and Last Number in Line
+                nums = ''.join(x for x in line if x.isdigit())
+                num1 = nums[0]
+                num2 = nums[-1]
+                
+                # print(num1, line.find(num1))
+                # print(num2, line.rfind(num2))
+                # print(words[0], line.find(words[0]))
+                # print(words[-1], line.rfind(words[-1]))
+                
+                # Find how close the word is to the beginning of the line
+                if words[0] != '' and words[-1] != '':
+                    if line.find(words[0]) < line.find(nums[0]):
+
+                        num1 = numWords[words[0]]
+                        
+                    # Find how close the word is to the beginning of the line
+                    if line.rfind(words[-1]) > line.rfind(nums[-1]):
+
+                        num2 = numWords[words[-1]]
+            else:
+                if words[0] != '' and words[-1] != '':
+                    num1 = numWords[words[0]]
+                    num2 = numWords[words[-1]]
+                
+            trueNum = str(num1) + str(num2)
+            
+            return int(trueNum)
+            
+            
+
+def numSum (line):
+    
+           # Find Numbers in Line
             nums = ''.join(x for x in line if x.isdigit())
 
             # Combine Em into the Num
             num = nums[0] + nums[-1]
             
-            # Add Em Up
-            total += int(num)
+            # Return the Num 
+            return int(num)
+
+def part1(path):
+    # Assert Total
+    total = 0
+
+    # Read Each Line of Input.txt
+    with open(path) as f:
+        content = f.readlines()
+        
+        # Loop through each line
+        for line in content:
+            
+            total += numSum(line)
             
         # Print Total 
         print(total)    
 
 # Same as Part 1 but looking for Entire Words instead of Numbers
-def part2():
+def part2(path):
     
     # Assert Total 
     total = 0
     
     # Read Each Line of Input.txt
-    with open('test2.txt') as f:
+    with open(path) as f:
         content = f.readlines()
         
         for line in content:
             
-            numLine = numWordToNum(line);
-            print(numLine)
-    
-    
-    return 0
+            trueNum = wordNumSum(line)
+            print(trueNum)
+            
+            total += trueNum
+            
+    print(total)
     
 # Part 1 
-#part1()
+#part1('test1.txt')
+#part1('input.txt')
 
 # Part 2
-part2()
+#part2('test2.txt')
+part2('input.txt')

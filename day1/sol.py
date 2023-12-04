@@ -73,9 +73,6 @@ def part2():
     
     return 0
     
-
-
-    
 # Part 1 
 #part1()
 

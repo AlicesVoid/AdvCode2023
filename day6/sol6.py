@@ -1,3 +1,8 @@
+def openFile(path):
+    # Open File
+    with open(path) as f:
+        content = f.readlines()
+        return content
 
 def boat_dist(t_max, t_press):
     d = (t_max - t_press)*t_press
@@ -20,31 +25,28 @@ def part1(path):
     dists = []
     total = 1
     
-    # Open File
-    with open(path) as f:
-        # Read the First Line of Input:
-        content = f.readlines()
+    # Open File 
+    content = openFile(path)
+
+    for line in content:
+        words = line.split()
         
-        # Get Every Number before the word 'Distance" 
-        for line in content:
-            words = line.split()
-            
-            # If the first value is time, store every subsequent value as an integer in times
-            if words[0] == 'Time:':
-                for word in words[1:]:
-                    times.append(int(word))
+        # If the first value is time, store every subsequent value as an integer in times
+        if words[0] == 'Time:':
+            for word in words[1:]:
+                times.append(int(word))
+    
+        # If the first value is distance, store every subsequent value as an integer in dists
+        elif words[0] == 'Distance:':
+            for word in words[1:]:
+                dists.append(int(word))
         
-            # If the first value is distance, store every subsequent value as an integer in dists
-            elif words[0] == 'Distance:':
-                for word in words[1:]:
-                    dists.append(int(word))
-        
-        # Loop from 1 to the length of times
-        for i in range(0, len(times)):
-            # If the boat beats the record, print the time
-            records = beat_record(times[i], dists[i])
-            print(records)
-            total *= records
+    # Loop from 1 to the length of times
+    for i in range(0, len(times)):
+        # If the boat beats the record, print the time
+        records = beat_record(times[i], dists[i])
+        print(records)
+        total *= records
              
     print(total)
    
@@ -57,41 +59,38 @@ def part2(path):
     realdist = ''
     total = 1
     
-    # Open File
-    with open(path) as f:
-        # Read the First Line of Input:
-        content = f.readlines()
-        
-        # Get Every Number before the word 'Distance" 
-        for line in content:
-            words = line.split()
-            
-            # If the first value is time, store every subsequent value  in times
-            if words[0] == 'Time:':
-                for word in words[1:]:
-                    times.append(word)
-                    
-            # If the first value is distance, store every subsequent value in dists
-            elif words[0] == 'Distance:':
-                for word in words[1:]:
-                    dists.append(word)
-        
-        # add all the values to the realtime and realdist
-        for time in times:
-            realtime += time
-        for dist in dists:
-            realdist += dist
-        
-        # print(times, dists)
-        # print(realtime, realdist)
+    # Open File 
+    content = openFile(path)
 
-        records = beat_record(int(realtime), int(realdist))
-        total *= records
+    for line in content:
+        words = line.split()
+        
+        # If the first value is time, store every subsequent value  in times
+        if words[0] == 'Time:':
+            for word in words[1:]:
+                times.append(word)
+                
+        # If the first value is distance, store every subsequent value in dists
+        elif words[0] == 'Distance:':
+            for word in words[1:]:
+                dists.append(word)
+                
+    # add all the values to the realtime and realdist
+    for time in times:
+        realtime += time
+    for dist in dists:
+        realdist += dist
+    
+    # print(times, dists)
+    # print(realtime, realdist)
+
+    records = beat_record(int(realtime), int(realdist))
+    total *= records
              
     print(total)
     
 # Part 1 
-# part1('input.txt')
+part1('test1.txt')
 
 # Part 2
-part2('input.txt')
+part2('test2.txt')

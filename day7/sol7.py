@@ -1,14 +1,14 @@
-# Dictionary to Determine the Value of Each Card
-cardValues = {'2': 1,
-                '3': 2,
-                '4': 3,
-                '5': 4,
-                '6': 5,
-                '7': 6,
-                '8': 7,
-                '9': 8,
-                'T': 9,
-                'J': 10,
+# Dictionary to Determine the Value of Each Card (J is now the Weakest Card)
+cardValues = {'J': 1,
+              '2': 2,
+                '3': 3,
+                '4': 4,
+                '5': 5,
+                '6': 6,
+                '7': 7,
+                '8': 8,
+                '9': 9,
+                'T': 10,
                 'Q': 11,
                 'K': 12,
                 'A': 13}
@@ -51,104 +51,203 @@ class CamelCards:
     def __init__(self, cards, bid):
         self.cards = cards
         self.bid = bid
+        self.hand = self.determineHand()
+        self.high = self.highTotal()
+        self.hand_j = self.swapForJ()
 
     # Show the Hand
-    def showHand(self):
+    def showCards(self):
         return self.cards
     
     # Show the Bid 
     def showBid(self):
         return self.bid
     
-    # Determine if the Hand has 5 of a kind
-    def isFiveOfAKind(self):
-        return len(set(self.cards)) == 1
+    # Show the Hand 
+    def showHand(self):
+        return self.hand
     
-    # Determine if the Hand has 4 of a kind
-    def isFourOfAKind(self):
-        if(len(set(self.cards)) == 2):
-            
-            # If commonChar == 4, return true
-            if(commonChar(self.cards) == 4):
-                return True
-        
-        return False
+    # Shows the J Hand 
+    def showHandJ(self):
+        return self.hand_j
     
-    # Determineif the Hand is a Full House 
-    def isFullHouse(self):
-        return len(set(self.cards)) == 2
+    # Show the highCard Number
+    def showHighCard(self):
+        return self.high
     
-    # Determine if the Hand has 3 of a kind
-    def isThreeOfAKind(self):
-        if(len(set(self.cards)) == 3):
-                
-            # If commonChar == 3, return true
-            if(commonChar(self.cards) == 3):
-                return True
-                
-                
-                
-        return False
+    # Finds Five Numbers for the Card Values
+    def highTotal(self):
+        highCard = []
+        # For Each Character in self.cards, get the value of the card
+        for i in range(0, len(self.cards)):
+            highCard.append(cardValues[self.cards[i]])
+        return highCard
     
-    # Determine if the Hand has Two Pairs in it 
-    def isTwoPair(self):
-        return len(set(self.cards)) == 3
-    
-    # Determine if the Hand has One Pair in it 
-    def isOnePair(self):
-        return len(set(self.cards)) == 4
-                
-    # Determine if the Hand has a High Card
-    def highCard(self):
-        return len(set(self.cards)) == 5
-    
-    # Determine Which Hand the Player has
+    # Determines the Hand of the User
     def determineHand(self):
-        if(self.isFiveOfAKind()):
-            return "Five of a Kind"
-        elif(self.isFourOfAKind()):
-            return "Four of a Kind"
-        elif(self.isFullHouse()):
-            return "Full House"
-        elif(self.isThreeOfAKind()):
-            return "Three of a Kind"
-        elif(self.isTwoPair()):
-            return "Two Pair"
-        elif(self.isOnePair()):
-            return "One Pair"
-        elif(self.highCard()):
-            return "High Card"
+        # Create a Dictionary to Store the Number of Each Character
+        charDict = {}
+        
+        # Loop Through the String and Add the Characters to the Dictionary
+        for char in self.cards:
+            # If the Character is Already in the Dictionary, Increment the Value
+            if(char in charDict):
+                charDict[char] += 1
+            # If the Character is Not in the Dictionary, Add it to the Dictionary
+            else:
+                charDict[char] = 1
+        
+        # Find the Maximum Value in the Dictionary
+        #print(charDict)
+        
+        maxVal = max(charDict.values())
+        
+        # Find the Key that Corresponds to the Maximum Value
+        for key in charDict:
+            if(charDict[key] == maxVal):
+                # If the Maximum Value is 5, Return Five of a Kind
+                if(maxVal == 5):
+                    return 'Five of a Kind'
+                # If the Maximum Value is 4, Return Four of a Kind
+                elif(maxVal == 4):
+                    return 'Four of a Kind'
+                # If the Maximum Value is 3, Return Three of a Kind
+                elif(maxVal == 3):
+                    # If the Hand is a Full House, Return Full House
+                    if(2 in charDict.values()):
+                        return 'Full House'
+                    # If the Hand is a Three of a Kind, Return Three of a Kind
+                    else:
+                        return 'Three of a Kind'
+                # If the Maximum Value is 2, Return Two Pair
+                elif(maxVal == 2):
+                    # Check that the Dict has 2 Values of 2
+                    if(list(charDict.values()).count(2) == 2):
+                        return 'Two Pair'
+                    # If the Hand is a One Pair, Return One Pair
+                    else:
+                        return 'One Pair'
+                # If the Maximum Value is 1, Return High Card
+                elif(maxVal == 1):
+                    return 'High Card'
+
+    # Swaps out J for the Best Card 
+    def swapForJ(self):
+         # Create a Dictionary to Store the Number of Each Character
+        charDict = {}
+        Jtotal = 0
+        
+        # Loop Through the String and Add the Characters to the Dictionary
+        for char in self.cards:
+            # Make sure it's not J
+            if(char != 'J'):
+                # If the Character is Already in the Dictionary, Increment the Value
+                if(char in charDict):
+                    charDict[char] += 1
+                # If the Character is Not in the Dictionary, Add it to the Dictionary
+                else:
+                    charDict[char] = 1
+            else: 
+                Jtotal += 1
+                
+        # If the charDict contains J, get the Jtotal 
+        if(Jtotal > 0):
+            
+            # Bounds-Checking
+            if(Jtotal == 5):
+                return 'Five of a Kind'
+            
+            # Add the Jtotal to the highest value in charDict 
+            for key in charDict:
+                if(charDict[key] == max(charDict.values())):
+                    charDict[key] += Jtotal
+                    break
+            
+            # If there's no highest value in charDict, add Jtotal to the highest card value 
+            if(max(charDict.values()) == 1):
+                # Find the Key with the Highest Card Value 
+                maxKey = max(charDict, key=charDict.get)
+                # Add the Jtotal to the Highest Card Value
+                charDict[maxKey] += Jtotal
+        
+        # Find the Maximum Value in the Dictionary
+        #print(charDict)
+        print(self.cards, charDict)
+        maxVal = max(charDict.values())
+        
+        # Find the Key that Corresponds to the Maximum Value
+        for key in charDict:
+            if(charDict[key] == maxVal):
+                # If the Maximum Value is 5, Return Five of a Kind
+                if(maxVal == 5):
+                    return 'Five of a Kind'
+                # If the Maximum Value is 4, Return Four of a Kind
+                elif(maxVal == 4):
+                    return 'Four of a Kind'
+                # If the Maximum Value is 3, Return Three of a Kind
+                elif(maxVal == 3):
+                    # If the Hand is a Full House, Return Full House
+                    if(2 in charDict.values()):
+                        return 'Full House'
+                    # If the Hand is a Three of a Kind, Return Three of a Kind
+                    else:
+                        return 'Three of a Kind'
+                # If the Maximum Value is 2, Return Two Pair
+                elif(maxVal == 2):
+                    # Check that the Dict has 2 Values of 2
+                    if(list(charDict.values()).count(2) == 2):
+                        return 'Two Pair'
+                    # If the Hand is a One Pair, Return One Pair
+                    else:
+                        return 'One Pair'
+                # If the Maximum Value is 1, Return High Card
+                elif(maxVal == 1):
+                    return 'High Card'
+        
 
 # Parse the determienHand to determine if the hand is better than the other hand
 def compHands(hand1, hand2):
-    # For Both Hands, Run Determine Hand  
-    for i in range(0, len(hand1)):
-        # If the Hand is Better than the Other Hand
-        if(handValues[hand1[i].determineHand()] < handValues[hand2[i].determineHand()]):
-            print(hand1[i].determineHand(), ' beats ', hand2[i].determineHand())
+    # If the Hand Values are Equal, Compare the High Card
+    if(handValues[hand1.showHand()] == handValues[hand2.showHand()]):
+        return compCards(hand1, hand2)
+    # If the Hand Values are Not Equal, Compare the Hand Values
+    else:
+        # If the Hand Value of hand1 is Greater, Return hand1
+        if(handValues[hand1.showHand()] < handValues[hand2.showHand()]):
             return hand1
-        # If the Other Hand is Better than the Hand
-        elif(handValues[hand1[i].determineHand()] > handValues[hand2[i].determineHand()]):
-            print(hand2[i].determineHand(), ' beats ', hand1[i].determineHand())
+        # If the Hand Value of hand2 is Greater, Return hand2
+        else:
             return hand2
-        # If the Hands are Equal
-        elif(handValues[hand1[i].determineHand()] == handValues[hand2[i].determineHand()]):
-            return compCards(hand1, hand2)
+        
+# Parse the determienHand to determine if the hand is better than the other hand
+def compHandsJ(hand1, hand2):
+    # If the Hand Values are Equal, Compare the High Card
+    if(handValues[hand1.showHandJ()] == handValues[hand2.showHandJ()]):
+        return compCards(hand1, hand2)
+    # If the Hand Values are Not Equal, Compare the Hand Values
+    else:
+        # If the Hand Value of hand1 is Greater, Return hand1
+        if(handValues[hand1.showHandJ()] < handValues[hand2.showHandJ()]):
+            return hand1
+        # If the Hand Value of hand2 is Greater, Return hand2
+        else:
+            return hand2
     
-
 # Determine which Hand is Stronger if They are Equal
 def compCards(hand1, hand2):
-    # For Both Hands, Iterate through the characters in the hand 
-    for i in range(0, len(hand1)):
-        # If the character in hand1 is greater than the character in hand2
-        if(cardValues(hand1.showHand()[i]) > cardValues(hand2.showHand()[i])):
-            print(hand1.showHand()[i], ' beats ', hand2.showHand()[i])
+    # Iterate through the high card lists and figure out which one is greater
+    for i in range(0, len(hand1.showHighCard())):
+        # If the Card Value of hand1 is Greater, Return hand1
+        if(hand1.showHighCard()[i] > hand2.showHighCard()[i]):
             return hand1
-        # If the character in hand2 is greater than the character in hand1
-        elif(cardValues(hand1.showHand()[i]) < cardValues(hand2.showHand()[i])):
-            print(hand2.showHand()[i], ' beats ', hand1.showHand()[i])
+        # If the Card Value of hand2 is Greater, Return hand2
+        elif(hand1.showHighCard()[i] < hand2.showHighCard()[i]):
             return hand2
+        # If the Card Value of hand1 is Equal to hand2, Continue
+        else:
+            continue
 
+# Open the File and Return the Content
 def openFile(path):
     # Open File
     with open(path) as f:
@@ -159,7 +258,6 @@ def openFile(path):
 def part1(path):
     
     camelCards = []
-    sortedCamelCards = []
     total = 0
     
     content = openFile(path)
@@ -170,52 +268,81 @@ def part1(path):
         line = line.split()
         
         # Create a CamelCards Object for each line in the file
-        camelCards.append(CamelCards(line[0], int(line[-1])))
-    
-    # Sort the Hands Based on How Good the Hands Are 
-    for cards in camelCards:
+        newCard = CamelCards(line[0], int(line[-1]))
         
-        # If sortedCamelCards is empty, add the first hand to it
-        if(len(sortedCamelCards) == 0):
-            print(0, cards.showHand())
-            sortedCamelCards.append(cards)
-            
-        # If sortedCamelCards is not empty, compare the hands and add them to the list
+        # Super Ultra Mega Debugging
+        print(newCard.showCards(), newCard.showBid(), newCard.showHand(), newCard.showHighCard())
+        
+        # If CamelCards is Empty, Add the Card to the List
+        if(len(camelCards) == 0):
+            camelCards.append(newCard)
         else:
-            # Loop Through the Camel Cards in the Sorted List and Figure out Which One it Beats 
-            for i in range(0, len(sortedCamelCards)):
-                # If the Hand is Better or Equal than the Other Hand
-                if(handValues[cards.determineHand()] <= handValues[sortedCamelCards[i].determineHand()]):
-                    sortedCamelCards.insert(i, cards)
+            # Iterate Through the List of CamelCards
+            for i in range(0, len(camelCards)): 
+                # if compHands returns the newCard, add the newCard to the List
+                if(compHands(newCard, camelCards[i]) == newCard):
+                    camelCards.insert(i, newCard)
                     break
-                
-                # If the Hand Value is Less, just keep Iterating
-                elif(handValues[cards.determineHand()] > handValues[sortedCamelCards[i].determineHand()]):
-                    continue
-                
-                # If there are no more hands in the list, add the hand to the end of the list
-                else:
-                    sortedCamelCards.append(cards)
+                # If at the end of the list, just append the newCard
+                elif(i == len(camelCards)-1):
+                    camelCards.append(newCard)
                     break
     
-    # Loop Through the Sorted Camel Cards and Determine the Payout 
-    for i in range(0, len(sortedCamelCards)):
-        # Total = Bid * (Length of sortedCamelCards + 1 - Index of Hand)
-        print((len(sortedCamelCards) + 1 - (i + 1)), 'times ',sortedCamelCards[i].showBid())
-        add2Total = sortedCamelCards[i].showBid() * (len(sortedCamelCards) + 1 - (i + 1))
-        total += add2Total
-    
+    # Get the Total Earned
+    for i in range(0, len(camelCards)):
+        # Total Earned = Bid * (Number of Cards - Position in List)
+        addVal = camelCards[i].showBid() * (len(camelCards) - i)
+        total += addVal
+        
     # Done
     print(total)
                     
 # Part 2 Code
 def part2(path):
     
+    
+    camelCards = []
+    total = 0
+    
     content = openFile(path)
-    print(content)
+    
+    # Create a CamelCards Object for each line in the file
+    for line in content: 
+        # Split the Line 
+        line = line.split()
+        
+        # Create a CamelCards Object for each line in the file
+        newCard = CamelCards(line[0], int(line[-1]))
+        
+        # Super Ultra Mega Debugging
+        # print(newCard.showCards(), newCard.showBid(), newCard.showHandJ(), newCard.showHighCard())
+        
+        # If CamelCards is Empty, Add the Card to the List
+        if(len(camelCards) == 0):
+            camelCards.append(newCard)
+        else:
+            # Iterate Through the List of CamelCards
+            for i in range(0, len(camelCards)): 
+                # if compHands returns the newCard, add the newCard to the List
+                if(compHandsJ(newCard, camelCards[i]) == newCard):
+                    camelCards.insert(i, newCard)
+                    break
+                # If at the end of the list, just append the newCard
+                elif(i == len(camelCards)-1):
+                    camelCards.append(newCard)
+                    break
+    
+    # Get the Total Earned
+    for i in range(0, len(camelCards)):
+        # Total Earned = Bid * (Number of Cards - Position in List)
+        addVal = camelCards[i].showBid() * (len(camelCards) - i)
+        total += addVal
+        
+    # Done
+    print(total)
     
 # Part 1 
-part1('test1.txt')
+# part1('input.txt')
 
 # Part 2
-# part2('test2.txt')
+part2('input.txt')

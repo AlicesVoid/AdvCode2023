@@ -1,18 +1,22 @@
-
+# Open the File and Return the Content
+def openFile(path):
+    # Open File
+    with open(path) as f:
+        content = f.readlines()
+        return content
+    
 # Part 1 Code
 def part1(path):
 
     # Open File
-    with open(path) as f:
-        content = f.readlines()
+    content = openFile(path)
     
 
 # Part 2 Code
 def part2(path):
     
-        # Open File
-    with open(path) as f:
-        content = f.readlines()
+    # Open File
+    content = openFile(path)
     
 # Part 1 
 # part1('test1.txt')

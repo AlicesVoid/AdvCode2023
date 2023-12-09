@@ -96,6 +96,7 @@ def mapRangeValue(map, seedPair):
             # midPair: the src, cnt for values in the range of (src, src+cnt)
            if(srcDiff >= 0):
                # I'm too tired to keep doing this rn LOL 
+               midPair = []
             
         
         
